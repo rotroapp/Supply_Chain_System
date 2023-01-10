@@ -229,26 +229,24 @@ public class SupplyChain extends Application {
 
                 }else {
 
-                Product product = productDetails.getSelectedProduct();
-                if(product != null )
-                {
-                    String email = loginLabel.getText();
-                    String kemail = email.substring(12);
-                    System.out.println(kemail + " the fetched email");
-                    if(Order.placeSingleOrder(product,kemail)){
-                        System.out.println("Order Placed!");
+                    Product product = productDetails.getSelectedProduct();
+                    if (product != null) {
+                        String email = loginLabel.getText();
+                        String kemail = email.substring(12);
+                        System.out.println(kemail + " the fetched email");
+                        if (Order.placeSingleOrder(product, kemail)) {
+                            System.out.println("Order Placed!");
 
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Order Status");
-                        alert.setHeaderText("Order Placed Successfully");
-                        alert.show();
-                    }else {
-                        System.out.println("Order Failed!");
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Order Status");
+                            alert.setHeaderText("Order Placed Successfully");
+                            alert.show();
+                        } else {
+                            System.out.println("Order Failed!");
+                        }
+                    } else {
+                        System.out.println("Please select a product");
                     }
-                }else{
-                    System.out.println("Please select a product");
-                }
-                //open
                 }
             }
         });
