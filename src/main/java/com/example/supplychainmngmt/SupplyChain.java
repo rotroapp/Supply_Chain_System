@@ -6,10 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -28,11 +25,11 @@ public class SupplyChain extends Application {
     Boolean loggedIn = false;
     Login login = new Login();
     ProductDetails productDetails = new ProductDetails();
-
+    Button loginButton;
+    Button logoutButton;
     Button orderButton;
-    private GridPane hearBar()
+    public GridPane hearBar()
     {
-
         GridPane gridPane = new GridPane();
 
 
@@ -42,7 +39,24 @@ public class SupplyChain extends Application {
         searchText.setMinWidth(250);
         searchText.setPromptText("Please search here");
         loginLabel = new Label("Please Login!");
-        Button loginButton = new Button("Login");
+        System.out.println("Before if");
+
+        if(loggedIn == false)
+        {
+            System.out.println("login");
+            loginButton = new Button(" LogIn  ");
+            logoutButton = new Button("LogOut");
+
+        }else {
+
+            System.out.println("logout");
+            gridPane.getChildren().remove(loginButton);
+            gridPane.getChildren().remove(loginLabel);
+            logoutButton = new Button("LogOut");
+
+
+        }
+
 
         loginButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -53,10 +67,29 @@ public class SupplyChain extends Application {
                     bodyPane.getChildren().add(loginPage());
                     bodyPane.setStyle("-fx-background-color: #67baeb");
 
+
+
                 }
+
             }
         });
 
+        logoutButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                loggedIn = false;
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Logged Out");
+                alert.setHeaderText("You are logged out successfully");
+                alert.show();
+                    bodyPane.getChildren().clear();
+                    bodyPane.getChildren().add(loginPage());
+                    bodyPane.setStyle("-fx-background-color: #67baeb");
+                hearBar();
+
+
+            }
+        });
         Button searchButton = new Button("Search Iteam");
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -77,65 +110,24 @@ public class SupplyChain extends Application {
 //        }
         gridPane.add(searchText,7,1);
         gridPane.add(searchButton,8,1);
+
+        gridPane.add(logoutButton,19,0);
         gridPane.add(loginButton,19,0);
         gridPane.add(loginLabel,19,1);
-
         gridPane.setVgap(5);
         gridPane.setHgap(10);
-        gridPane.setAlignment(Pos.TOP_CENTER);
-        gridPane.setStyle("-fx-background-color: #ddfbf7");
-        return gridPane;
-    }
-
-
-    private GridPane footerBar(){
-
-        GridPane gridPane = new GridPane();
-        orderButton = new Button("Buy Now");
         gridPane.setAlignment(Pos.CENTER);
-
-        orderButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(loggedIn == false)
-                {
-                    bodyPane.getChildren().clear();
-                    bodyPane.getChildren().add(loginPage());
-                    bodyPane.setStyle("-fx-background-color: #67baeb");
+        gridPane.setStyle("-fx-background-color: #b0dbf5");
+        bodyPane.setStyle("-fx-background-color: #ead758");
 
 
-                }else {
-
-                Product product = productDetails.getSelectedProduct();
-                if(product != null )
-                {
-                    String email = loginLabel.getText();
-                    email = email.substring(12);
-                    System.out.println(email);
-                    if(Order.placeSingleOrder(product,email)){
-                        System.out.println("Order Placed!");
-                    }else {
-                        System.out.println("Order Failed!");
-                    }
-                }else{
-                    System.out.println("Please select a product");
-                }
-
-                }
-            }
-        });
-        gridPane.add(orderButton,0,0);
-        gridPane.setMinWidth(width);
-        gridPane.setTranslateY(height+80);
-//        gridPane.setStyle("-fx-background-color: #baeb67");
         return gridPane;
-
     }
     private GridPane loginPage()
     {
-       Label emaillabel = new Label("Email");
-       Label passordlabel = new Label("Password");
-       Label messagelabel = new Label("Message Here...");
+        Label emaillabel = new Label("Email");
+        Label passordlabel = new Label("Password");
+        Label messagelabel = new Label(null);
 
         TextField emailfield = new TextField();
         emailfield.setPromptText("Please enter emailID");
@@ -158,7 +150,14 @@ public class SupplyChain extends Application {
 
 
                     messagelabel.setText("Login Successful");
+
+
                     loggedIn = true;
+                    System.out.println("before hear bar");
+                    hearBar();
+                    System.out.println("After hear bar");
+                    loginLabel.setText("Welcome :-) "+ email);
+
 
                 }else{
                     messagelabel.setText("Invalid User,If new please SignUp!");
@@ -201,6 +200,67 @@ public class SupplyChain extends Application {
 
         return gridPane;
     }
+
+    private GridPane footerBar(){
+
+        GridPane gridPane = new GridPane();
+        gridPane.setMinWidth(width);
+        gridPane.setMinHeight(90);
+//        -fx-background-color: #136392
+//        gridPane.setStyle("-fx-background-color: #ddfbf7");
+        gridPane.setStyle("-fx-background-color: #b0dbf5");
+        orderButton = new Button("Buy Now");
+        gridPane.setAlignment(Pos.CENTER);
+
+        orderButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if(loggedIn == false)
+                {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Order Status");
+                    alert.setHeaderText("Order Not Placed");
+                    alert.setContentText("Kindly Login First");
+                    alert.show();
+
+//                    bodyPane.getChildren().clear();
+//                    bodyPane.getChildren().add(loginPage());
+//                    bodyPane.setStyle("-fx-background-color: #67baeb");
+
+                }else {
+
+                Product product = productDetails.getSelectedProduct();
+                if(product != null )
+                {
+                    String email = loginLabel.getText();
+                    String kemail = email.substring(12);
+                    System.out.println(kemail + " the fetched email");
+                    if(Order.placeSingleOrder(product,kemail)){
+                        System.out.println("Order Placed!");
+
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Order Status");
+                        alert.setHeaderText("Order Placed Successfully");
+                        alert.show();
+                    }else {
+                        System.out.println("Order Failed!");
+                    }
+                }else{
+                    System.out.println("Please select a product");
+                }
+                //open
+                }
+            }
+        });
+        gridPane.add(orderButton,0,0);
+        gridPane.setMinWidth(width);
+        gridPane.setTranslateY(height+80);
+//        gridPane.setStyle("-fx-background-color: #baeb67");
+        return gridPane;
+
+    }
+
+
     Pane createContent(){
         Image img = new Image("C:\\Users\\rajat\\Desktop\\smake\\SupplyChainMngmt\\src\\rotoapp.png");
         ImageView boardImage = new ImageView();
@@ -214,7 +274,7 @@ public class SupplyChain extends Application {
         root.setPrefSize(width, height + upperline + 80);
         bodyPane.setTranslateY(upperline);
         bodyPane.setMinSize(width,height);
-        bodyPane.setStyle("-fx-background-color: #136392");
+        bodyPane.setStyle("-fx-background-color: #031412");
         bodyPane.getChildren().add(boardImage);
 
 
